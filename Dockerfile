@@ -1,6 +1,6 @@
 FROM alpine:latest as build
 
-RUN apk add --no-cache alpine-sdk git perl go musl binutils gcc 
+RUN apk add --no-cache alpine-sdk git perl
 # Prep the build environment
 RUN mkdir -p /build/sources
 WORKDIR /build/sources
@@ -46,26 +46,12 @@ RUN ./configure --prefix=/etc/nginx  \
 RUN make
 RUN make install
 
-RUN mkdir -p /go/src/github.com/hnlq715
-WORKDIR /go/src/github.com/hnlq715
-RUN git clone https://github.com/hnlq715/nginx-vts-exporter.git
-ENV GOPATH=/go
-ENV GOROOT=/usr/lib/go
-WORKDIR /go/src/github.com/hnlq715/nginx-vts-exporter
-RUN go build
-
 FROM alpine:latest
 COPY --from=build /etc/nginx /etc/nginx
-COPY --from=build /go/src/github.com/hnlq715/nginx-vts-exporter/nginx-vts-exporter /nginx-vts-exporter
 RUN rm /etc/nginx/nginx.conf
 COPY build/nginx.conf /etc/nginx/nginx.conf
 COPY build/conf.d /etc/nginx/conf.d
 RUN ln -s /etc/nginx/sbin/nginx /sbin/nginx
 RUN apk add --no-cache openssl ca-certificates pcre zlib perl
 
-ENV METRICS_NS=nginx
-
-ADD entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENTRYPOINT [ "/sbin/nginx" ]
