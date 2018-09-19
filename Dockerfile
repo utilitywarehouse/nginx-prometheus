@@ -31,7 +31,8 @@ WORKDIR /build/sources/
 RUN wget https://nginx.org/download/nginx-1.14.0.tar.gz
 # Grab the VTS plugin source
 RUN git clone https://github.com/vozlt/nginx-module-vts.git
-
+# Grab the stickey session plugin
+RUN git clone https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng.git
 # Build with VTS plugin
 RUN tar -zxf nginx-1.14.0.tar.gz
 WORKDIR /build/sources/nginx-1.14.0
@@ -42,7 +43,8 @@ RUN ./configure --prefix=/etc/nginx  \
                 --with-http_ssl_module \
                 --with-stream \
                 --with-mail=dynamic \
-                --add-module=../nginx-module-vts
+                --add-module=../nginx-module-vts \
+                --add-module=../nginx-sticky-module-ng
 RUN make
 RUN make install
 

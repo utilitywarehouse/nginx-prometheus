@@ -3,9 +3,10 @@
 
 [![Docker Repository on Quay](https://quay.io/repository/utilitywarehouse/nginx-prometheus/status "Docker Repository on Quay")](https://quay.io/repository/utilitywarehouse/nginx-prometheus)
 ## About
-A build of Nginx with a 3rd party plugin, Virtual Traffic Status (VTS) which provides an instrumented deployment of Nginx on alpine.
+A build of Nginx with 3rd party plugins, Virtual Traffic Status (VTS) which provides an instrumented deployment of Nginx on alpine and nginx-sticky-module-ng which provides sticky sessions for upstreams.
 * https://github.com/vozlt/nginx-module-vts
 * http://nginx.org/en/docs/configure.html
+* https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng.git
 
 ## Running
 you can run this image as a Docker container
@@ -28,6 +29,9 @@ The instance will expose stats on the `8080` port, multiple formats are supporte
 * html - `/status/format/html`
 * jsonp - `/status/format/jsonp`
 * prometheus- `/status/format/prometheus`
+
+### Sticky sessions for Upstreams
+For more information on this plugin please refer to the code owners documentation https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng.git
 
 for more information on exposed metrics and use of the control endpoint please head over to https://github.com/vozlt/nginx-module-vts and read the manual/docs
 
