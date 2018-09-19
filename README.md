@@ -1,5 +1,7 @@
 # Nginx Prometheus 
-`quay.io/utilitywarehouse/nginx-prometheus`
+`quay.io/utilitywarehouse/nginx-prometheus` 
+
+[![Docker Repository on Quay](https://quay.io/repository/utilitywarehouse/nginx-prometheus/status "Docker Repository on Quay")](https://quay.io/repository/utilitywarehouse/nginx-prometheus)
 ## About
 A build of Nginx with a 3rd party plugin, Virtual Traffic Status (VTS) which provides an instrumented deployment of Nginx on alpine.
 * https://github.com/vozlt/nginx-module-vts
