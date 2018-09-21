@@ -7,6 +7,8 @@ A build of Nginx with 3rd party plugins, Virtual Traffic Status (VTS) which prov
 * https://github.com/vozlt/nginx-module-vts
 * http://nginx.org/en/docs/configure.html
 * https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng.git
+* https://github.com/wdaike/ngx_upstream_jdomain.git
+* https://github.com/yaoweibin/nginx_upstream_check_module.git
 
 ## Running
 you can run this image as a Docker container
