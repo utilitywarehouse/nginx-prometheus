@@ -47,6 +47,7 @@ RUN ./configure --prefix=/etc/nginx  \
                 --with-zlib=../zlib-1.2.11 \
                 --with-http_ssl_module \
                 --with-stream \
+                --with-stream_ssl_module \
                 --with-mail=dynamic \
                 --add-module=../nginx-module-vts \
                 --add-module=../nginx-sticky-module-ng \
