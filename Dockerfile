@@ -5,15 +5,15 @@ RUN apk add --no-cache alpine-sdk git perl linux-headers
 RUN mkdir -p /build/sources
 WORKDIR /build/sources
 # Grap the Nginx Deps sources 
-RUN wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.42.tar.gz && \
+RUN wget ftp://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz && \
     wget http://zlib.net/zlib-1.2.11.tar.gz && \
-    wget http://www.openssl.org/source/openssl-1.1.1b.tar.gz
+    wget http://www.openssl.org/source/openssl-1.1.1g.tar.gz
 # Unpack deps
-RUN tar -zxf pcre-8.42.tar.gz && \
+RUN tar -zxf pcre-8.44.tar.gz && \
     tar -zxf zlib-1.2.11.tar.gz && \
-    tar -zxf openssl-1.1.1b.tar.gz
+    tar -zxf openssl-1.1.1g.tar.gz
 # Build deps
-WORKDIR /build/sources/pcre-8.42
+WORKDIR /build/sources/pcre-8.44
 RUN ./configure
 RUN make
 RUN make install
@@ -21,14 +21,14 @@ WORKDIR /build/sources/zlib-1.2.11
 RUN ./configure
 RUN make
 RUN make install
-WORKDIR /build/sources/openssl-1.1.1b
+WORKDIR /build/sources/openssl-1.1.1g
 RUN ./Configure linux-x86_64 --prefix=/usr
 RUN make
 RUN make install
 
 # Grab the Nginx Source
 WORKDIR /build/sources/
-RUN wget https://nginx.org/download/nginx-1.15.12.tar.gz
+RUN wget https://nginx.org/download/nginx-1.18.0.tar.gz
 # Grab the VTS plugin source
 RUN git clone https://github.com/vozlt/nginx-module-vts.git
 # Grab the stickey session plugin
@@ -39,11 +39,11 @@ RUN git clone https://github.com/wdaike/ngx_upstream_jdomain.git
 RUN git clone https://github.com/yaoweibin/nginx_upstream_check_module.git 
 
 # Build with VTS plugin
-RUN tar -zxf nginx-1.15.12.tar.gz
-WORKDIR /build/sources/nginx-1.15.12
+RUN tar -zxf nginx-1.18.0.tar.gz
+WORKDIR /build/sources/nginx-1.18.0
 RUN ./configure --prefix=/etc/nginx  \
                 --conf-path=/etc/nginx/nginx.conf \
-                --with-pcre=../pcre-8.42 \
+                --with-pcre=../pcre-8.44 \
                 --with-zlib=../zlib-1.2.11 \
                 --with-http_ssl_module \
                 --with-stream \
