@@ -46,6 +46,7 @@ RUN ./configure --prefix=/etc/nginx  \
                 --with-pcre=../pcre-8.42 \
                 --with-zlib=../zlib-1.2.11 \
                 --with-http_ssl_module \
+                --with-http_sub_module \
                 --with-stream \
                 --with-stream_ssl_module \
                 --with-mail=dynamic \
