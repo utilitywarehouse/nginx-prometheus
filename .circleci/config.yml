@@ -6,10 +6,10 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 18.05.0-ce
+          version: 19.03.13
       - run: docker login -u $DOCKER_ID -p $DOCKER_PASSWORD registry.uw.systems
       - run: docker build -t nginx-prometheus:$CIRCLE_SHA1 .
-      - run: docker tag nginx-prometheus:$CIRCLE_SHA1 nginx-prmetheus:latest
+      - run: docker tag nginx-prometheus:$CIRCLE_SHA1 nginx-prometheus:latest
       - run: docker push nginx-prometheus:$CIRCLE_SHA1
       - run: docker push nginx-prometheus:latest
 
@@ -18,6 +18,7 @@ workflows:
   build:
     jobs:
       - build:
+          context: cbc-dev
           filters:
             branches:
               only: master
