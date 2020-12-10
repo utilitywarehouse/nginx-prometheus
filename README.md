@@ -1,7 +1,8 @@
 # Nginx Prometheus 
 `quay.io/utilitywarehouse/nginx-prometheus` 
 
-[![Docker Repository on Quay](https://quay.io/repository/utilitywarehouse/nginx-prometheus/status "Docker Repository on Quay")](https://quay.io/repository/utilitywarehouse/nginx-prometheus)
+[![Build Status](https://drone.prod.merit.uw.systems/api/badges/utilitywarehouse/nginx-prometheus/status.svg)](https://drone.prod.merit.uw.systems/utilitywarehouse/nginx-prometheus)
+
 ## About
 A build of Nginx with 3rd party plugins, Virtual Traffic Status (VTS) which provides an instrumented deployment of Nginx on alpine and nginx-sticky-module-ng which provides sticky sessions for upstreams.
 * https://github.com/vozlt/nginx-module-vts
