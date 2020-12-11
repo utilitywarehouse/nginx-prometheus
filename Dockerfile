@@ -1,70 +1,53 @@
-FROM alpine:latest as build
+FROM alpine:3.12
 
-RUN apk add --no-cache alpine-sdk git perl linux-headers
-# Prep the build environment
-RUN mkdir -p /build/sources
-WORKDIR /build/sources
-# Grap the Nginx Deps sources 
-RUN wget ftp://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz && \
-    wget http://zlib.net/zlib-1.2.11.tar.gz && \
-    wget http://www.openssl.org/source/openssl-1.1.1g.tar.gz
-# Unpack deps
-RUN tar -zxf pcre-8.44.tar.gz && \
-    tar -zxf zlib-1.2.11.tar.gz && \
-    tar -zxf openssl-1.1.1g.tar.gz
-# Build deps
-WORKDIR /build/sources/pcre-8.44
-RUN ./configure
-RUN make
-RUN make install
-WORKDIR /build/sources/zlib-1.2.11
-RUN ./configure
-RUN make
-RUN make install
-WORKDIR /build/sources/openssl-1.1.1g
-RUN ./Configure linux-x86_64 --prefix=/usr
-RUN make
-RUN make install
+RUN apk --update add pcre libbz2 ca-certificates libressl git && rm /var/cache/apk/*
 
-# Grab the Nginx Source
-WORKDIR /build/sources/
-RUN wget https://nginx.org/download/nginx-1.18.0.tar.gz
-# Grab the VTS plugin source
-RUN git clone https://github.com/vozlt/nginx-module-vts.git
-# Grab the stickey session plugin
-RUN git clone https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng.git
-# Grab the resolve upstream plugin
-RUN git clone https://github.com/wdaike/ngx_upstream_jdomain.git
-# Grab the upstream healthcheck plugin
-RUN git clone https://github.com/yaoweibin/nginx_upstream_check_module.git 
+RUN adduser -h /etc/nginx -D -s /bin/sh nginx
+WORKDIR /tmp
 
-# Build with VTS plugin
-RUN tar -zxf nginx-1.18.0.tar.gz
-WORKDIR /build/sources/nginx-1.18.0
-RUN ./configure --prefix=/etc/nginx  \
-                --conf-path=/etc/nginx/nginx.conf \
-                --with-pcre=../pcre-8.44 \
-                --with-zlib=../zlib-1.2.11 \
-                --with-http_ssl_module \
-                --with-http_sub_module \
-                --with-stream \
-                --with-stream_ssl_module \
-                --with-mail=dynamic \
-                --add-module=../nginx-module-vts \
-                --add-module=../nginx-sticky-module-ng \
-                --add-module=../ngx_upstream_jdomain \
-                --add-module=../nginx_upstream_check_module
-RUN make
-RUN make install
+ARG NGINX_VERSION=1.18.0
+ENV NGINX_VERSION=$NGINX_VERSION
 
-WORKDIR /
-RUN rm -rf /build
-RUN apk del alpine-sdk git
+# fetch extra modules, add compilation env, build required C based gems and cleanup
+RUN git clone https://github.com/vozlt/nginx-module-vts.git \
+  && git clone https://github.com/Refinitiv/nginx-sticky-module-ng.git \
+  && git clone https://github.com/wdaike/ngx_upstream_jdomain.git \
+  && git clone https://github.com/yaoweibin/nginx_upstream_check_module.git \
+  && apk --update add --virtual build_deps build-base zlib-dev pcre-dev libressl-dev \
+  && wget -O - https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz | tar xzf - \
+  && cd nginx-$NGINX_VERSION && ./configure \
+    --prefix=/etc/nginx \
+    --sbin-path=/usr/sbin/nginx \
+    --conf-path=/etc/nginx/nginx.conf \
+    --error-log-path=stderr \
+    --http-log-path=/dev/stdout \
+    --user=nginx \
+    --group=nginx \
+    --with-http_ssl_module \
+    --with-http_sub_module \
+    --with-http_v2_module \
+    --with-threads \
+    --with-stream \
+    --with-stream_ssl_module \
+    --with-mail=dynamic \
+    --add-module=../nginx-module-vts \
+    --add-module=../nginx-sticky-module-ng \
+    --add-module=../ngx_upstream_jdomain \
+    --add-module=../nginx_upstream_check_module \
+    --with-pcre-jit \
+    --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security' \
+    --with-ld-opt='-Wl,-z,relro -Wl,--as-needed' \
+  && make install \
+  && cd .. && rm -rf nginx-$NGINX_VERSION \
+  && mkdir /var/cache/nginx \
+  && rm /etc/nginx/*.default \
+  && apk del build_deps && rm /var/cache/apk/* \
+  && rm -rf nginx-module-vts \
+  && rm -rf nginx-sticky-module-ng \
+  && rm -rf ngx_upstream_jdomain \
+  && rm -rf nginx_upstream_check_module
 
-RUN rm /etc/nginx/nginx.conf
 COPY build/nginx.conf /etc/nginx/nginx.conf
 COPY build/conf.d /etc/nginx/conf.d
-RUN apk add --no-cache ca-certificates
-RUN ln -s /etc/nginx/sbin/nginx /sbin/nginx
 
-ENTRYPOINT [ "/sbin/nginx" ]
+ENTRYPOINT ["/usr/sbin/nginx"]
