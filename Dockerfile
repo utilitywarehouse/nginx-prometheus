@@ -10,7 +10,7 @@ ENV NGINX_VERSION=$NGINX_VERSION
 
 # fetch extra modules, add compilation env, build required C based gems and cleanup
 RUN git clone https://github.com/vozlt/nginx-module-vts.git \
-  && git clone https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng.git \
+  && git clone https://github.com/Refinitiv/nginx-sticky-module-ng.git \
   && git clone https://github.com/wdaike/ngx_upstream_jdomain.git \
   && git clone https://github.com/yaoweibin/nginx_upstream_check_module.git \
   && apk --update add --virtual build_deps build-base zlib-dev pcre-dev libressl-dev \
